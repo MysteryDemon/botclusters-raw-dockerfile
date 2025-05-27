@@ -22,8 +22,8 @@ RUN cd /usr/src && \
     ./configure --enable-optimizations && \
     make -j"$(nproc)" && \
     make altinstall && \
-    ln -s /usr/local/bin/python3.10 /usr/bin/python3 && \
-    ln -s /usr/local/bin/pip3.10 /usr/bin/pip3 && \
+    ln -sf /usr/local/bin/python3.10 /usr/bin/python3 && \
+    ln -sf /usr/local/bin/pip3.10 /usr/bin/pip3 && \
     cd / && rm -rf /usr/src/Python-${PYTHON_VERSION}*
 
 RUN python3 -m pip install --upgrade pip setuptools
