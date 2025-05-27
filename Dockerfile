@@ -14,6 +14,7 @@ RUN apt-get update && \
         zlib1g-dev bzip2 bzip2 libbz2-dev libreadline-dev sqlite3 libsqlite3-dev \
         libssl-dev libffi-dev xz-utils findutils libnsl-dev uuid-dev \
         libgdbm-dev libncurses5-dev libncursesw5-dev tar curl && \
+        **liblzma-dev** && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN python${PYTHON_VERSION} -m pip install --upgrade pip setuptools && \
