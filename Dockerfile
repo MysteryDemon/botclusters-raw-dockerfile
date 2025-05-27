@@ -1,24 +1,32 @@
 FROM mysterysd/wzmlx:v3
 
-ARG PYTHON_VERSION=3.10
+ARG PYTHON_VERSION=3.10.14
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
-    apt-get install -y software-properties-common && \
-    add-apt-repository universe && \
-    apt-get update && \
     apt-get install -y \
         g++ make wget pv git bash xz-utils gawk \
-        python${PYTHON_VERSION} python${PYTHON_VERSION}-dev python3-pip python3-setuptools \
+        libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev \
+        libffi-dev liblzma-dev uuid-dev libgdbm-dev \
+        libncurses5-dev libncursesw5-dev libnsl-dev \
+        xz-utils tar curl build-essential libxml2-dev tk-dev \
+        libxmlsec1-dev software-properties-common findutils \
         mediainfo psmisc procps supervisor \
-        zlib1g-dev bzip2 libbz2-dev libreadline-dev sqlite3 libsqlite3-dev \
-        libssl-dev liblzma-dev libffi-dev xz-utils findutils libnsl-dev uuid-dev \
-        libgdbm-dev libncurses5-dev libncursesw5-dev tar curl && \
+        python3-pip python3-setuptools && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN python${PYTHON_VERSION} -m pip install --upgrade pip setuptools && \
-    ln -sf /usr/bin/python${PYTHON_VERSION} /usr/bin/python3 && \
-    ln -sf /usr/bin/pip3 /usr/bin/pip${PYTHON_VERSION}
+RUN cd /usr/src && \
+    wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz && \
+    tar xzf Python-${PYTHON_VERSION}.tgz && \
+    cd Python-${PYTHON_VERSION} && \
+    ./configure --enable-optimizations && \
+    make -j"$(nproc)" && \
+    make altinstall && \
+    ln -s /usr/local/bin/python3.10 /usr/bin/python3 && \
+    ln -s /usr/local/bin/pip3.10 /usr/bin/pip3 && \
+    cd / && rm -rf /usr/src/Python-${PYTHON_VERSION}*
+
+RUN python3 -m pip install --upgrade pip setuptools
 
 ENV PYENV_ROOT="/root/.pyenv"
 ENV PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims:$PATH"
