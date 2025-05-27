@@ -1,19 +1,24 @@
-FROM fedora:42
+FROM mysterysd/wzmlx:latest
 
 ARG PYTHON_VERSION=3.10
 ENV PYTHON_VERSION=${PYTHON_VERSION}
 
-RUN dnf -y update && \
-    dnf -y install g++ make wget pv git bash xz gawk \
-    python${PYTHON_VERSION} python${PYTHON_VERSION}-devel mediainfo psmisc procps-ng supervisor \
-    zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel openssl-devel libffi-devel \
-    xz-devel findutils libnsl2-devel libuuid-devel gdbm-devel ncurses-devel tar curl && \
-    dnf clean all
+RUN apt-get update && \
+    apt-get install -y software-properties-common && \
+    add-apt-repository universe && \
+    apt-get update && \
+    apt-get install -y \
+        g++ make wget pv git bash xz-utils gawk \
+        python${PYTHON_VERSION} python${PYTHON_VERSION}-dev python3-pip python3-setuptools \
+        mediainfo psmisc procps supervisor \
+        zlib1g-dev bzip2 bzip2 libbz2-dev libreadline-dev sqlite3 libsqlite3-dev \
+        libssl-dev libffi-dev xz-utils findutils libnsl-dev uuid-dev \
+        libgdbm-dev libncurses5-dev libncursesw5-dev tar curl && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN python${PYTHON_VERSION} -m ensurepip --upgrade && \
-    python${PYTHON_VERSION} -m pip install --upgrade pip setuptools && \
-    alternatives --install /usr/bin/python3 python3 /usr/bin/python${PYTHON_VERSION} 1 && \
-    alternatives --install /usr/bin/pip3 pip3 /usr/bin/pip${PYTHON_VERSION} 1
+RUN python${PYTHON_VERSION} -m pip install --upgrade pip setuptools && \
+    ln -sf /usr/bin/python${PYTHON_VERSION} /usr/bin/python3 && \
+    ln -sf /usr/bin/pip3 /usr/bin/pip${PYTHON_VERSION}
 
 ENV PYENV_ROOT="/root/.pyenv"
 ENV PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims:$PATH"
@@ -42,4 +47,6 @@ RUN mkdir -p ${SUPERVISORD_CONF_DIR} \
     /app
 
 WORKDIR /app
+COPY --from=mwader/static-ffmpeg:7.1.1 /ffmpeg /bin/ffmpeg
+COPY --from=mwader/static-ffmpeg:7.1.1 /ffprobe /bin/ffprobe
 COPY . .
