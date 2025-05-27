@@ -1,4 +1,4 @@
-FROM mysterysd/wzmlx:latest
+FROM mysterysd/wzmlx:v3
 
 ARG PYTHON_VERSION=3.10
 ENV PYTHON_VERSION=${PYTHON_VERSION}
