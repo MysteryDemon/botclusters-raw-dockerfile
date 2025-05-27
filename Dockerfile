@@ -1,18 +1,17 @@
 FROM mysterysd/wzmlx:v3
 
 ARG PYTHON_VERSION=3.10
-ENV PYTHON_VERSION=${PYTHON_VERSION}
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
     apt-get install -y software-properties-common && \
-    add-apt-repository ppa:deadsnakes/ppa && \
     add-apt-repository universe && \
     apt-get update && \
     apt-get install -y \
         g++ make wget pv git bash xz-utils gawk \
         python${PYTHON_VERSION} python${PYTHON_VERSION}-dev python3-pip python3-setuptools \
         mediainfo psmisc procps supervisor \
-        zlib1g-dev bzip2 bzip2 libbz2-dev libreadline-dev sqlite3 libsqlite3-dev \
+        zlib1g-dev bzip2 libbz2-dev libreadline-dev sqlite3 libsqlite3-dev \
         libssl-dev liblzma-dev libffi-dev xz-utils findutils libnsl-dev uuid-dev \
         libgdbm-dev libncurses5-dev libncursesw5-dev tar curl && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
